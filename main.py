@@ -29,10 +29,19 @@ def save_db(data):
         json.dump(data, f, indent=4)
 
 def get_blocked_words():
-    """Reads blocked.txt for the filter."""
-    if os.path.exists(BLOCKED_FILE):
-        with open(BLOCKED_FILE, "r") as f:
-            return [line.strip().lower() for line in f if line.strip()]
+    """Finds blocked.txt regardless of where the app is running."""
+    # This finds the folder where main.py actually lives
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(base_path, "blocked.txt")
+    
+    if os.path.exists(file_path):
+        with open(file_path, "r") as f:
+            words = [line.strip().lower() for line in f if line.strip()]
+            # This print will show up in 'fly logs' so you can verify it loaded!
+            print(f"DEBUG: Loaded {len(words)} words from {file_path}")
+            return words
+    
+    print(f"DEBUG: Could not find {file_path}")
     return []
 
 db = load_db()
